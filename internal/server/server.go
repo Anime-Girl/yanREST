@@ -21,6 +21,7 @@ type server struct {
 func NewServer(handler http.Handler) *server {
 	return &server{
 		httpServer: &http.Server{
+			Addr:           ":8080",
 			Handler:        handler,
 			MaxHeaderBytes: maxHeaderSize,
 			ReadTimeout:    timeout,
