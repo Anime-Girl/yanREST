@@ -1,0 +1,383 @@
+swagger: "2.0"
+info:
+  description: "Необходимо реализовать RESTFul API сервис для проведения промоакций и розыгрышей призов."
+  version: "1.0.0"
+  title: "Промоакции и розыгрыши призов"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "yoroshikuqq@email.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "petstore.swagger.io"
+basePath: "/"
+tags:
+- name: "promo"
+  description: "Промоакции"
+schemes:
+- "https"
+- "http"
+paths:
+  /promo:
+    post:
+      tags:
+      - "promo"
+      summary: "Добавление промоакции с возможностью указания названия (name), описания (description)."
+      description: "В ответе ожидается идентификатор созданной промоакции, например, 1. Описание – не обязательный параметр, название – обязательный."
+      operationId: "createPromo"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Название создаваемой акции"
+        required: true
+        schema:
+          $ref: "#/definitions/PromoPost"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            type: "number"
+            format: "uint64"
+            example: "1"
+        "404":
+          description: "Invalid Input"
+    get:
+      tags:
+      - "promo"
+      summary: "Получение краткой информации (без информации об участниках и призах) обо всех промоакциях."
+      description: "В ответе ожидается полный список промоакций, без указания участников и призов в формате JSON."
+      operationId: "getAllPromos"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/PromoGet"
+        "404":
+          description: "Invalid Input"
+  /promo/{promoId}:
+    get:
+      tags:
+      - "promo"
+      summary: "Получение краткой информации (без информации об участниках и призах) обо всех промоакциях."
+      description: "ID промоакции, полную информацию о которой необходимо получить, передается в виде path-параметра, например: /promo/1. В ответе ожидается полная информация о промоакции, с указанием участников и призов в формате JSON."
+      operationId: "getPromoByID"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "promoId"
+        in: "path"
+        description: "ID промоакции"
+        required: true
+        type: "integer"
+        format: "uint64"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/PromoDetail"
+        "404":
+          description: "Invalid Input"
+    put:
+      tags:
+      - "promo"
+      summary: "Редактирование промо-акции по идентификатору промо-акции."
+      description: "Редактировать можно только свойства name, description. Удалить имя таким образом нельзя, описание – можно."
+      operationId: "updatePromoByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "promoId"
+        in: "path"
+        description: "ID редактируемой промоакции"
+        required: true
+        type: "integer"
+        format: "uint64"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: "string"
+            example: "Ok"
+        "404":
+          description: "Invalid Input"
+    delete:
+      tags:
+      - "promo"
+      summary: "Удаление промоакции по идентификатору."
+      description: "ID удаляемой промоакции передается как path-параметр, например: /promo/1."
+      operationId: "deletePromoByID"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "promoId"
+        in: "path"
+        description: "ID удаляемой промоакции"
+        required: true
+        type: "integer"
+        format: "uint64"
+      responses:
+        "200":
+          description: "Ok"
+          schema:
+            type: "string"
+            example: "Ok"
+        "404":
+          description: "Invalid Input"
+  /promo/{promoId}/parcicipant:
+    post:
+      tags:
+      - "promo"
+      summary: "Добавление участника в промоакцию по идентификатору промоакции."
+      description: "В запросе передается body с информацией о добавляемом участнике в формате JSON."
+      operationId: "getPromoParticipants"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "promoId"
+        in: "path"
+        description: "ID промоакции"
+        required: true
+        type: "integer"
+        format: "uint64"
+      - name: "body"
+        in: "body"
+        description: "Имя участника"
+        required: true
+        schema:
+          $ref: "#/definitions/ParticipantPost"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            type: "number"
+            format: "uint64"
+            example: "1"
+        "404":
+          description: "Invalid Input"
+  /promo/{promoId}/participant/{participantId}:
+    delete:
+      tags:
+      - "promo"
+      summary: "Удаление участника из промоакции по идентификаторам промоакции и участника."
+      description: "ID редактируемой промоакции и ID удаляемого участника передаются как path-параметры."
+      operationId: "deletePromoParticipantById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "promoId"
+        in: "path"
+        description: "ID редактируемой промоакции"
+        required: true
+        type: "integer"
+        format: "uint64"
+      - name: "participantId"
+        in: "path"
+        description: "ID удаляемого участника"
+        required: true
+        type: "integer"
+        format: "uint64"
+      responses:
+        "200":
+          description: "Ok"
+          schema:
+            type: "string"
+            example: "Ok"
+        "404":
+          description: "Invalid Input"
+  /promo/{promoId}/prize:
+    post:
+      tags:
+      - "promo"
+      summary: "Добавление приза в промоакцию по идентификатору промоакции."
+      description: "В запросе передается body с информацией о добавляемом призе в формате JSON."
+      operationId: "createPromoPrize"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "promoId"
+        in: "path"
+        description: "ID редактируемой промоакции"
+        required: true
+        type: "integer"
+        format: "uint64"
+      - name: "body"
+        in: body
+        description: "Приз"
+        required: true
+        schema:
+          $ref: "#/definitions/PrizePost"
+      responses:
+        "404":
+          description: "Invalid Input"
+  /promo/{promoId}/prize/{prizeId}:
+    delete:
+      tags:
+      - "promo"
+      summary: "Удаление приза из промоакции по идентификаторам промоакции и приза."
+      description: "ID редактируемой промоакции и ID удаляемого приза передаются как path-параметры."
+      operationId: "deletePromoPrizeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "promoId"
+        in: "path"
+        description: "ID редактируемой промоакции"
+        required: true
+        type: "integer"
+        format: "uint64"
+      - name: "prizeId"
+        in: "path"
+        description: "ID удаляемого участника"
+        required: true
+        type: "integer"
+        format: "uint64"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            type: "number"
+            format: "uint64"
+            example: "1"
+        "404":
+          description: "Invalid Input"
+  /promo/{promoId}/raffle:
+    post:
+      tags:
+      - "promo"
+      summary: "Проведение розыгрыша"
+      description: "Проведение розыгрыша возможно только в том случае, когда количество участников и призов в промоакции совпадает (т.е., например, если в промоакции в текущий момент 2 участника и 2 приза или 3 участника и 3 приза и т.д.)"
+      operationId: "promoRaffle"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "promoId"
+        in: "path"
+        description: "ID редактируемой промоакции"
+        required: true
+        type: "integer"
+        format: "uint64"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Raffle"
+        "409":
+          description: "Raffle is not possible"
+        "404":
+          description: "Invalid Input"
+definitions:
+# =========================================================================================================
+  PromoGet:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+        description: "идентификатор промоакции"
+        format: "uint64"
+        example: "1"
+      name:
+        type: "string"
+        description: "название промоакции"
+        example: "Скидка на пиццу в Суши WOK"
+      description:
+        type: "string"
+        description: "описание промоакции"
+        example: "Скидка на любую позицию из раздела 'пицца' при заказе от 1000р у нашего партнёра - компании Суши WOK"
+  PromoPost:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "название промоакции"
+        example: "Скидка на пиццу в Суши WOK"
+      description:
+        type: "string"
+        description: "описание промоакции"
+        example: "Скидка на любую позицию из раздела 'пицца' при заказе от 1000р у нашего партнёра - компании Суши WOK"
+# =========================================================================================================
+  PrizeGet:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+        description: "идентификатор приза"
+        format: "uint64"
+        example: "1"
+      description:
+        type: "string"
+        description: "описание приза"
+        example: "Купон на скидку Суши WOK"
+  PrizePost:
+    type: "object"
+    properties:
+      description:
+        type: "string"
+        description: "описание приза"
+        example: "Купон на скидку Суши WOK"
+# =========================================================================================================
+  ParticipantGet:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+        description: "идентификатор участника"
+        format: "uint64"
+        example: "1"
+      name:
+        type: "string"
+        description: "имя участника"
+        example: "Василий Тёркин"
+  ParticipantPost:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "имя участника"
+        example: "Василий Тёркин"
+# =========================================================================================================
+  PromoDetail:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+        description: "идентификатор промоакции"
+        format: "uint64"
+        example: "1"
+      name:
+        type: "string"
+        description: "название промоакции"
+        example: "Скидка на пиццу в Суши WOK"
+      description:
+        type: "string"
+        description: "описание промоакции"
+        example: "Скидка на любую позицию из раздела 'пицца' при заказе от 1000р у нашего партнёра - компании Суши WOK"
+      prizes:
+        type: "array"
+        items:
+          $ref: "#/definitions/PrizeGet"
+      participants:
+        type: "array"
+        items:
+          $ref: "#/definitions/ParticipantGet"
+# =========================================================================================================
+  Raffle:
+    type: "array"
+    items:
+      type: "object"
+      properties:
+        winner:
+          $ref: "#/definitions/ParticipantGet"
+        prize:
+          $ref: "#/definitions/PrizeGet"
